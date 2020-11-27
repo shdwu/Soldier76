@@ -36,7 +36,7 @@ userInfo = {
 
 	-- 自动腰射，不使用自动腰射留空，使用则设置为键盘上按键
 	-- Auto aim, leave blank without auto aim, set as the key on the keyboard when using.
-	autoPressAimKey = "",
+	autoPressAimKey = "lctrl",
 
 	-- 启动控制 (capslock - 使用大写锁定键控制 | numlock - 小键盘锁定键控制 | G_bind - 使用指令控制) | Start up control
 	startControl = "capslock",
@@ -95,12 +95,12 @@ userInfo = {
 		["G3"] = "",
 		["G4"] = "",
 		["G5"] = "",
-		["G6"] = "5.56",
-		["G7"] = "9mm",
+		["G6"] = "next",
+		["G7"] = "5.56",
 		["G8"] = "7.62",
-		["G9"] = ".45",
-		["G10"] = "last",
-		["G11"] = "next",
+		["G9"] = "",
+		["G10"] = "scopeX4",
+		["G11"] = "scopeX2",
 		-- lalt + G
 		["lalt + G3"] = "",
 		["lalt + G4"] = "",
@@ -259,7 +259,7 @@ function pubg.isAimingState (mode)
 		-- 开镜
 		["ADS"] = function ()
 			if userInfo.aimingSettings == "recommend" then
-				return IsMouseButtonPressed(3) and not IsModifierPressed("lshift")
+				return IsMouseButtonPressed(3)
 			elseif userInfo.aimingSettings == "default" then
 				return not IsModifierPressed("lshift") and not IsModifierPressed("lalt")
 			elseif userInfo.aimingSettings == "ctrlmode" then
@@ -275,7 +275,7 @@ function pubg.isAimingState (mode)
 				if userInfo.autoPressAimKey == "" then
 					return IsModifierPressed("lctrl")
 				else
-					return not IsModifierPressed("lshift") and not IsModifierPressed("lalt")
+					return IsModifierPressed(userInfo.autoPressAimKey)
 				end
 			elseif userInfo.aimingSettings == "default" then
 				return IsMouseButtonPressed(3)
@@ -764,9 +764,7 @@ function pubg.findInSeries (cmd)
 	if "first" == cmd then
 		pubg.gunIndex = 1
 	elseif "next" == cmd then
-		if pubg.gunIndex < #pubg.gun[pubg.bulletType] then
-			pubg.gunIndex = pubg.gunIndex + 1
-		end
+		pubg.gunIndex = (pubg.gunIndex % #pubg.gun[pubg.bulletType]) + 1
 	elseif "last" == cmd then
 		pubg.gunIndex = #pubg.gun[pubg.bulletType]
 	end
@@ -1119,7 +1117,7 @@ function pubg.modifierHandle (modifier)
 	pubg.outputLogRender() -- Call log rendering method to output information
 end
 
---[[ Listener method ]]
+--[[ Main ]]
 function OnEvent (event, arg, family)
 
 	-- OutputLogMessage("event = %s, arg = %s, family = %s\n", event, arg, family)
